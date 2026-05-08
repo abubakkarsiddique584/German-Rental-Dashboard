@@ -14,7 +14,7 @@ An interactive full-stack data analytics application that explores and visualize
 - **Data Processing:** Pandas, NumPy
 - **Frontend/Visualization:** Plotly.js, HTML5, CSS3 (Inter Typography)
 
-## 📦 How to Run Locally
-1. **Clone the repository:**
+## 📦 Installation
+1. Clone the repo:
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/German-Rental-Dashboard.git](https://github.com/YOUR_USERNAME/German-Rental-Dashboard.git)
+   git clone [https://github.com/abubakkarsiddique584/German-Rental-Dashboard.git](https://github.com/abubakkarsiddique584/German-Rental-Dashboard.git)
