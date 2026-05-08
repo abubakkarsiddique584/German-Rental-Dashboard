@@ -1,0 +1,173 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>German Rental Dashboard Pro</title>-->
+<!--    <style>-->
+<!--        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 40px auto; background: #f4f7f6; color: #333; }-->
+<!--        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }-->
+<!--        .filter-group { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }-->
+<!--        .result-box { background: #d4edda; padding: 20px; border-left: 5px solid #28a745; margin: 20px 0; }-->
+<!--        img { width: 100%; border-radius: 8px; margin-top: 20px; }-->
+<!--        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div class="container">-->
+<!--        <h1>🏙️ Premium German Rental Finder</h1>-->
+
+<!--        <form method="POST">-->
+<!--            <div class="filter-group">-->
+<!--                <select name="city">-->
+<!--                    {% for c in cities %}-->
+<!--                        <option value="{{ c }}">{{ c }}</option>-->
+<!--                    {% endfor %}-->
+<!--                </select>-->
+
+<!--                <input type="number" name="budget" placeholder="Max Budget (€)" required>-->
+
+<!--                <input type="number" name="rooms" placeholder="Min Rooms" step="0.5" style="width: 100px;">-->
+<!--            </div>-->
+
+<!--            <div class="filter-group">-->
+<!--                <label><input type="checkbox" name="kitchen"> Equipped Kitchen (EBK)</label>-->
+<!--                <label><input type="checkbox" name="balcony"> Balcony</label>-->
+<!--                <button type="submit">Search Market</button>-->
+<!--            </div>-->
+<!--        </form>-->
+
+<!--        {% if recommendation %}-->
+<!--        <div class="result-box">-->
+<!--            <h3>Top Districts for your search in {{ selected_city }}:</h3>-->
+<!--            <p>Found {{ count }} matching listings. Try looking in:</p>-->
+<!--            <ul>-->
+<!--                {% for place in recommendation %}-->
+<!--                    <li><strong>{{ place }}</strong></li>-->
+<!--                {% endfor %}-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--        {% elif count == 0 and selected_city %}-->
+<!--        <p style="color: red;">No listings found for that budget. Try increasing your budget or removing filters.</p>-->
+<!--        {% endif %}-->
+
+<!--        <hr>-->
+<!--        <h2>Market Statistics</h2>-->
+<!--        <img src="{{ url_for('static', filename='price_comparison.png') }}">-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ImmoAnalytics | Abubakar</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --sidebar: #0f172a; --accent: #3b82f6; --bg: #f8fafc; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; font-size: 13px; color: #1e293b; overflow: hidden; }
+
+        .wrapper { display: flex; height: 100vh; }
+
+        /* Sidebar optimized for Laptop */
+        aside { width: 300px; background: var(--sidebar); color: white; padding: 15px; display: flex; flex-direction: column; }
+        aside h2 { font-size: 1.1rem; margin: 0 0 15px 0; color: var(--accent); }
+
+        label { display: block; margin-top: 8px; font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        select, input { width: 100%; padding: 7px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: white; margin-top: 3px; font-size: 12px; }
+
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+        .checkbox-group label { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; color: white; text-transform: none; }
+
+        button { background: var(--accent); color: white; padding: 10px; border: none; border-radius: 6px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+
+        .result-box { margin-top: 15px; overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        .district-item { background: #1e293b; padding: 6px 10px; border-radius: 6px; margin-bottom: 4px; display: flex; justify-content: space-between; font-size: 0.75rem; }
+
+        /* Main Content */
+        main { flex: 1; padding: 20px; display: flex; flex-direction: column; }
+        header h1 { margin: 0; font-size: 1.3rem; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 15px 0; }
+        .stat-card { background: white; padding: 10px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-card small { font-size: 0.6rem; color: #64748b; font-weight: 700; }
+        .stat-card div { font-size: 1rem; font-weight: 700; color: var(--sidebar); }
+
+        .chart-card { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); flex-grow: 1; position: relative; }
+
+        footer { margin-top: auto; padding-top: 10px; font-size: 0.7rem; color: #94a3b8; text-align: center; border-top: 1px solid #334155; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <aside>
+        <h2>🏙️ ImmoAnalytics</h2>
+        <form method="POST">
+            <label>City Search</label>
+            <select name="city">
+                {% for c in cities %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+            </select>
+
+            <label>Budget (€ Warm)</label>
+            <input type="number" name="budget" placeholder="Max Rent" required>
+
+            <label>Min Rooms</label>
+            <input type="number" name="rooms" step="0.5" value="1">
+
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="kitchen"> Kitchen</label>
+                <label><input type="checkbox" name="balcony"> Balcony</label>
+                <label><input type="checkbox" name="garden"> Garden</label>
+                <label><input type="checkbox" name="lift"> Lift</label>
+            </div>
+
+            <label>Pets</label>
+            <select name="pets">
+                <option value="any">Any policy</option>
+                <option value="allowed">Allowed</option>
+            </select>
+
+            <button type="submit">Filter Market</button>
+        </form>
+
+        <div class="result-box">
+            {% if searched %}
+                <p style="color:var(--accent); font-size:0.65rem; font-weight:700;">TOP DISTRICTS ({{ count }} found)</p>
+                {% for dist, c in recommendation.items() %}
+                    <div class="district-item"><span>{{ dist }}</span> <b>{{ c }}</b></div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <footer>
+            &copy; {{ year }} | Copyright <b>Abubakkar</b>
+        </footer>
+    </aside>
+
+    <main>
+        <header>
+            <h1>German Housing Explorer</h1>
+            <p style="color:#64748b; margin:0; font-size:0.8rem;">Real-time national rental data analysis</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card"><small>TOTAL ADS</small><div>{{ stats.total_listings }}</div></div>
+            <div class="stat-card"><small>AVG RENT</small><div>{{ stats.avg_rent }}</div></div>
+            <div class="stat-card"><small>CITIES</small><div>{{ stats.city_count }}</div></div>
+            <div class="stat-card"><small>TOP MARKET</small><div style="color:var(--accent);">{{ stats.top_city }}</div></div>
+        </div>
+
+        <div class="chart-card">
+            <div id="chart"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    var graphs = {{ graphJSON | safe }};
+    Plotly.newPlot('chart', graphs, {responsive: true, displayModeBar: false});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python Environment
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# PyCharm Settings
+.idea/
+
+# Data Files
+data/*.csv
+data/*.xlsx
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Flask/Plotly temporary files
+static/*.png
+static/*.jpg
